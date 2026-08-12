@@ -91,10 +91,13 @@ def poster_grid(cards, cols=6, key_prefix="grid"):
             poster = m.get("poster_url")
 
             with colset[c]:
-                if poster:
-                    st.image(poster, use_container_width=True)
-                else:
-                    st.write("🖼️ No poster")
+                if poster and isinstance(poster, str):
+                    try:
+                        st.image(poster, use_container_width=True)
+                    except Exception:
+                        st.write("🖼️ Image failed to load")
+                    else:
+                        st.write("🖼️ No poster")
 
                 if st.button("Open", key=f"{key_prefix}_{r}_{c}_{idx}_{tmdb_id}"):
                     if tmdb_id:
