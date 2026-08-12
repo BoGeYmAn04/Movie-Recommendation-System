@@ -43,7 +43,7 @@ title_to_idx: Optional[Dict[str, int]] = None
 class TMDBMovieCard(BaseModel):
     tmdb_id: int
     title: str
-    overview: str
+    overview: Optional[str] = None
     poster_url: Optional[str] = None
     release_date: Optional[str] = None
     vote_average: Optional[float] = None
@@ -85,12 +85,14 @@ async def tmdb_get(path: str, params: Dict[str, Any]) -> Dict[str, Any]:
             r = await client.get(f"{tmdb_base_url}{path}", params=q)
     except httpx.RequestError as e:
         raise HTTPException(
-            status_code=502, 
-            detail=f"Error while making request to TMDB: {str(e)}")
+            status_code=502,
+            detail=f"Error while making request to TMDB: {type(e).__name__}: {repr(e)}"
+        )
     if r.status_code != 200:
         raise HTTPException(
-            status_code=502, 
-            detail=f"TMDB API returned an error: {r.text}")
+            status_code=502,
+            detail=f"TMDB API returned an error: {r.text}"
+        )
     return r.json()
 
 async def tmdb_cards_from_results(
